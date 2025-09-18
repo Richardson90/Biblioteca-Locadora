@@ -1,3 +1,5 @@
+const readline = require('readline');
+
 class Item {
     constructor(titulo) {
         this.titulo = titulo;
@@ -60,7 +62,8 @@ class Biblioteca {
     }
     listarLivros() {
         console.log("===Livros===");
-        this.livros.forEach(l => console.log(`${l.titulo} - ${l.disponivel}`));
+        this.livros.forEach((l,i) => console.log(`${i} - ${l.titulo} - ${l.disponivel ? 'Disponível' : 'Emprestado'}`));
+
     }
 }
 
@@ -73,7 +76,8 @@ class Locadora {
     }
     listarFilmes() {
         console.log("===Filmes===");
-        this.filmes.forEach(f => console.log(`${f.titulo} - ${f.disponivel}`));
+        this.filmes.forEach((f,i) => console.log(`${i} - ${f.titulo} - ${f.disponivel ? 'Disponível' : 'Emprestado'}`));
+
     }
 }
 
@@ -86,21 +90,23 @@ biblioteca.adicionarLivro(new Livro("Dom Casmurro"));
 locadora.adicionarFilme(new Filme("Matrix"));
 locadora.adicionarFilme(new Filme("Interestelar"));
 
-const readline = require('readline');
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
 function menu() {
-  console.log(`\n=== Menu ===
-    1. Adicionar usuário
-    2. Listar livros
-    3. Listar filmes
-    4. Emprestar item
-    5. Devolver item
-    6 Listar itens de usuário
-    0. Sair`);
+  console.log(`\n=== MENU ===
+     1. Adicionar Usuário
+     2. Cadastrar Livro
+     3. Cadastrar Filme
+     4. Listar Livros
+     5. Listar Filmes
+     6. Verificar Status de Livro/Filme   // ← NOVO
+     7. Emprestar Item
+     8. Devolver Item
+     9. Listar Itens de Usuário
+     0. Sair`);
       rl.question("Escolha uma opção: ", opcao => {
         switch(opcao){
           case '1':
@@ -111,12 +117,18 @@ function menu() {
             });
             break;
           case '2':
-            biblioteca.listarLivros();
+            rl.question('Título do livro: ', titulo => {
+            biblioteca.adicionarLivro(new Livro(titulo));
+            console.log(`Livro "${titulo}" cadastrado!`);
             menu();
+          });
             break;
           case '3':
-            locadora.listarFilmes();
+            rl.question('Título do filme: ', titulo => {
+            locadora.adicionarFilme(new Filme(titulo));
+            console.log(`Filme "${titulo}" cadastrado!`);
             menu();
+          });
             break;
           case '4':
             emprestarItem();
@@ -125,7 +137,7 @@ function menu() {
             devolverItem();
             break;
           case '6':
-            listarItensUsuario();
+            verificarStatus();
             break;
           case '0':
             console.log("Encerrando...");
@@ -193,6 +205,38 @@ function listarItensUsuario() {
   selecionarUsuario(user => {
     user.listarItens();
     menu();
+  });
+}
+
+function verificarStatus() {
+  console.log('1. Livro  2. Filme');
+  rl.question('Escolha o tipo de item para verificar: ', tipo => {
+    if (tipo === '1') {
+      biblioteca.listarLivros();
+      rl.question('Digite o índice do livro: ', i => {
+        const livro = biblioteca.livros[parseInt(i)];
+        if (livro) {
+          console.log(`Status de "${livro.titulo}": ${livro.disponivel ? 'Disponível' : 'Emprestado'}`);
+        } else {
+          console.log('Livro não encontrado.');
+        }
+        menu();
+      });
+    } else if (tipo === '2') {
+      locadora.listarFilmes();
+      rl.question('Digite o índice do filme: ', i => {
+        const filme = locadora.filmes[parseInt(i)];
+        if (filme) {
+          console.log(`Status de "${filme.titulo}": ${filme.disponivel ? 'Disponível' : 'Emprestado'}`);
+        } else {
+          console.log('Filme não encontrado.');
+        }
+        menu();
+      });
+    } else {
+      console.log('Tipo inválido.');
+      menu();
+    }
   });
 }
 
