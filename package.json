@@ -1,0 +1,12 @@
+{
+  "name": "biblioteca-locadora",
+  "version": "1.0.0",
+  "description": "",
+  "main": "biblioteca-locadora.js",
+  "scripts": {
+    "start": "node biblioteca-locadora.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
